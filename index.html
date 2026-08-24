@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Terrace Together</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --dusk-deep: #16302E;
+    --dusk-mid: #1F433F;
+    --gold: #E7A94C;
+    --gold-soft: #F2CC8F;
+    --coral: #E2725B;
+    --cream: #F6F1E4;
+    --cream-dim: #E7DFC9;
+    --sage: #8AA88C;
+    --ink: #0E211F;
+    --danger: #C1523F;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--dusk-deep); color: var(--ink); font-family: 'Inter', sans-serif; min-height: 100vh; }
+  h1, h2, h3 { font-family: 'Fraunces', serif; }
+  #app { min-height: 100vh; display: flex; flex-direction: column; }
+
+  .banner { background: linear-gradient(180deg, var(--dusk-deep) 0%, var(--dusk-mid) 100%); overflow: hidden; }
+  .banner svg { display: block; width: 100%; height: auto; }
+  .lantern-glow { filter: drop-shadow(0 0 6px rgba(231,169,76,0.55)); }
+  .lantern-glow.coral { filter: drop-shadow(0 0 6px rgba(226,114,91,0.55)); }
+
+  .login-wrap { flex: 1; display: flex; align-items: center; justify-content: center; padding: 24px; }
+  .login-card { background: var(--cream); border-radius: 22px; padding: 36px 30px; max-width: 420px; width: 100%; box-shadow: 0 30px 60px rgba(0,0,0,0.35); }
+  .login-card h1 { margin: 0 0 6px; font-size: 2rem; font-weight: 700; color: var(--dusk-deep); text-align: center; }
+  .login-card .subtitle { text-align: center; color: #5b6b64; margin: 0 0 26px; font-size: 0.95rem; }
+  .field-label { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: #6b7a73; font-weight: 600; margin-bottom: 10px; display: block; }
+  .name-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 22px; }
+  .name-pill { border: 1.5px solid #d9d0b8; background: #fff; border-radius: 12px; padding: 10px 4px; text-align: center; font-size: 0.85rem; font-weight: 600; color: var(--dusk-deep); cursor: pointer; transition: all 0.15s ease; }
+  .name-pill:hover { border-color: var(--gold); }
+  .name-pill.selected { background: var(--dusk-deep); border-color: var(--dusk-deep); color: var(--gold-soft); }
+  .pin-input, select, input[type=text], input[type=date], input[type=number] {
+    width: 100%; padding: 12px 14px; border-radius: 10px; border: 1.5px solid #d9d0b8;
+    font-size: 0.95rem; font-family: 'Inter', sans-serif; background: #fff;
+  }
+  .pin-input { letter-spacing: 0.3em; text-align: center; font-size: 1.1rem; margin-bottom: 18px; }
+  .pin-input:focus, select:focus, input:focus { outline: none; border-color: var(--gold); }
+  .btn { width: 100%; padding: 14px; border-radius: 12px; border: none; background: var(--dusk-deep); color: var(--cream); font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: background 0.15s ease; font-family: 'Inter', sans-serif; }
+  .btn:hover { background: var(--coral); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-secondary { background: transparent; color: var(--cream-dim); border: 1.5px solid rgba(246,241,228,0.35); width: auto; padding: 8px 16px; }
+  .btn-secondary:hover { background: rgba(246,241,228,0.1); color: var(--cream); }
+  .error-msg { color: var(--danger); font-size: 0.85rem; text-align: center; margin: -8px 0 16px; min-height: 1em; }
+
+  .topbar { padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; }
+  .topbar .greet { color: var(--cream); font-family: 'Fraunces', serif; font-size: 1.3rem; }
+  .topbar .greet span { color: var(--gold-soft); }
+
+  .content { flex: 1; background: var(--cream); border-radius: 28px 28px 0 0; max-width: 720px; margin: 0 auto; width: 100%; padding: 30px 24px 60px; }
+  .section-title { font-size: 1.3rem; font-weight: 600; color: var(--dusk-deep); margin: 0 0 4px; }
+  .section-sub { color: #6b7a73; font-size: 0.88rem; margin: 0 0 18px; }
+  .card { background: #fff; border-radius: 18px; padding: 22px; box-shadow: 0 6px 18px rgba(22,48,46,0.08); margin-bottom: 34px; }
+  .form-row { display: flex; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+  .form-group { flex: 1; min-width: 140px; }
+  .form-group label { display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: #6b7a73; font-weight: 600; margin-bottom: 6px; }
+
+  .booking-list { display: flex; flex-direction: column; gap: 12px; }
+  .booking-card { display: flex; gap: 14px; align-items: flex-start; background: #fff; border-radius: 16px; padding: 16px 18px; box-shadow: 0 4px 14px rgba(22,48,46,0.07); border-left: 4px solid var(--gold); }
+  .booking-card.mine { border-left-color: var(--coral); }
+  .booking-date { min-width: 58px; text-align: center; }
+  .booking-date .d { font-family: 'Fraunces', serif; font-size: 1.4rem; font-weight: 700; color: var(--dusk-deep); line-height: 1; }
+  .booking-date .m { font-size: 0.72rem; text-transform: uppercase; color: #8a9a92; letter-spacing: 0.05em; }
+  .booking-info { flex: 1; }
+  .booking-time { font-weight: 600; color: var(--dusk-deep); font-size: 0.92rem; }
+  .booking-name { display: inline-block; background: var(--sage); color: #fff; font-size: 0.72rem; font-weight: 600; padding: 2px 9px; border-radius: 20px; margin-left: 8px; }
+  .booking-purpose { color: #55645c; font-size: 0.87rem; margin-top: 4px; font-style: italic; }
+  .booking-guests { color: #8a9a92; font-size: 0.78rem; margin-top: 2px; }
+  .cancel-link { background: none; border: none; color: var(--coral); font-size: 0.78rem; font-weight: 600; cursor: pointer; padding: 0; margin-top: 8px; }
+  .cancel-link:hover { text-decoration: underline; }
+  .empty-state { text-align: center; padding: 30px 10px; color: #7a8b83; font-size: 0.9rem; }
+  .foot-note { text-align: center; color: #9aa89f; font-size: 0.75rem; margin-top: 6px; }
+  .spinner-wrap { flex: 1; display: flex; align-items: center; justify-content: center; color: var(--cream); }
+</style>
+</head>
+<body>
+<div id="app"><div class="spinner-wrap">Opening the terrace…</div></div>
+
+<script>
+// ---- Must match the Apps Script backend exactly ----
+const WEBAPP_URL = "PASTE_YOUR_DEPLOYED_WEBAPP_URL_HERE"; // ends in /exec
+const MEMBERS = [
+  { id: 'member-1', name: 'Gibu' },
+  { id: 'member-2', name: 'Mariam' },
+  { id: 'member-3', name: 'Anjana' },
+  { id: 'member-4', name: 'Arjun' },
+  { id: 'member-5', name: 'Anushka' },
+  { id: 'member-6', name: 'Tarun' },
+  { id: 'member-7', name: 'Abraham' },
+  { id: 'member-8', name: 'Anna' },
+  { id: 'member-9', name: 'Joseph' },
+];
+const PERIODS = ['Morning', 'Afternoon', 'Evening', 'Full day'];
+const RANGE_DAYS = 180; // how far ahead to fetch bookings for
+
+const ERROR_MESSAGES = {
+  ACCESS_DENIED: "Your code didn't match — please log in again.",
+  INVALID_BOOKING: "Please fill in all the booking details correctly.",
+  INVALID_DATE_RANGE: "Something went wrong loading the calendar. Try refreshing.",
+  DATE_OUT_OF_RANGE: "Pick a date within the next year.",
+  TIME_ALREADY_BOOKED: "That slot is already booked.",
+  BOOKING_NOT_FOUND: "That booking no longer exists — refreshing the list.",
+  NOT_YOUR_BOOKING: "You can only cancel your own bookings.",
+  UNKNOWN_ACTION: "Something went wrong. Try refreshing the page.",
+  USE_POST: "Something went wrong talking to the server.",
+  SERVER_ERROR: "The server had trouble with that request. Try again.",
+  NETWORK: "Couldn't reach the terrace server — check your connection.",
+};
+
+let currentMember = null; // { id, name }
+let sessionCode = null;
+let selectedLoginName = null;
+let bookings = [];
+let bookingsLoaded = false;
+let refreshTimer = null;
+
+const app = document.getElementById("app");
+
+function lanternBanner() {
+  return `
+  <div class="banner">
+    <svg viewBox="0 0 720 90" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+      <line x1="0" y1="14" x2="720" y2="14" stroke="#3c6a63" stroke-width="2" />
+      ${[60,150,240,330,420,510,600,660].map((x,i) => {
+        const len = 18 + (i % 3) * 10;
+        const gold = i % 2 === 0;
+        const color = gold ? "var(--gold)" : "var(--coral)";
+        const cls = gold ? "lantern-glow" : "lantern-glow coral";
+        return `
+          <line x1="${x}" y1="14" x2="${x}" y2="${14+len}" stroke="#3c6a63" stroke-width="1.5" />
+          <ellipse class="${cls}" cx="${x}" cy="${14+len+9}" rx="9" ry="11" fill="${color}" />
+          <rect x="${x-2}" y="${14+len-2}" width="4" height="4" fill="#3c6a63" />
+        `;
+      }).join("")}
+    </svg>
+  </div>`;
+}
+
+// ---------- API layer ----------
+async function callApi(action, extraFields) {
+  try {
+    const body = new URLSearchParams({ action, ...(extraFields || {}) });
+    if (currentMember) {
+      body.set('memberId', currentMember.id);
+      body.set('code', sessionCode);
+    }
+    const res = await fetch(WEBAPP_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: body.toString(),
+    });
+    if (!res.ok) return { ok: false, error: 'NETWORK' };
+    const data = await res.json();
+    return data;
+  } catch (e) {
+    return { ok: false, error: 'NETWORK' };
+  }
+}
+
+function errorText(code) {
+  return ERROR_MESSAGES[code] || "Something went wrong. Please try again.";
+}
+
+// ---------- Login ----------
+function render() {
+  if (!currentMember) renderLogin();
+  else renderMain();
+}
+
+function renderLogin(errorMsg) {
+  app.innerHTML = `
+    ${lanternBanner()}
+    <div class="login-wrap">
+      <div class="login-card">
+        <h1>Terrace Together</h1>
+        <p class="subtitle">Private bookings, just for family</p>
+        <span class="field-label">Who's this?</span>
+        <div class="name-grid" id="nameGrid">
+          ${MEMBERS.map(m => `<div class="name-pill ${selectedLoginName === m.name ? 'selected' : ''}" data-name="${m.name}">${m.name}</div>`).join("")}
+        </div>
+        <span class="field-label">Family Code</span>
+        <input type="password" inputmode="numeric" maxlength="8" class="pin-input" id="pinInput" placeholder="••••" />
+        <div class="error-msg">${errorMsg || ""}</div>
+        <button class="btn" id="loginBtn">Step onto the terrace</button>
+      </div>
+    </div>
+  `;
+  document.querySelectorAll(".name-pill").forEach(el => {
+    el.addEventListener("click", () => {
+      selectedLoginName = el.getAttribute("data-name");
+      document.querySelectorAll(".name-pill").forEach(p => p.classList.remove("selected"));
+      el.classList.add("selected");
+    });
+  });
+  const pinInput = document.getElementById("pinInput");
+  pinInput.addEventListener("keydown", (e) => { if (e.key === "Enter") attemptLogin(); });
+  document.getElementById("loginBtn").addEventListener("click", attemptLogin);
+}
+
+async function attemptLogin() {
+  const codeVal = document.getElementById("pinInput").value.trim();
+  if (!selectedLoginName) { renderLogin("Pick your name first."); return; }
+  if (!codeVal) { renderLogin("Enter the family code."); return; }
+
+  const member = MEMBERS.find(m => m.name === selectedLoginName);
+  const btn = document.getElementById("loginBtn");
+  btn.disabled = true; btn.textContent = "Checking…";
+
+  // Verify by attempting a real availability call — this both confirms the
+  // code is right (backend checks memberId+code) and warms the first load.
+  currentMember = member;
+  sessionCode = codeVal;
+  const today = new Date();
+  const from = fmtDate(today);
+  const to = fmtDate(addDays(today, RANGE_DAYS));
+  const res = await callApi('availability', { from, to });
+
+  if (!res.ok) {
+    currentMember = null;
+    sessionCode = null;
+    renderLogin(errorText(res.error));
+    return;
+  }
+
+  bookings = res.bookings || [];
+  bookingsLoaded = true;
+  render();
+  startAutoRefresh();
+}
+
+function logout() {
+  currentMember = null;
+  sessionCode = null;
+  selectedLoginName = null;
+  bookings = [];
+  bookingsLoaded = false;
+  stopAutoRefresh();
+  render();
+}
+
+function startAutoRefresh() {
+  stopAutoRefresh();
+  refreshTimer = setInterval(() => { refreshBookings(); }, 15000);
+}
+function stopAutoRefresh() { if (refreshTimer) clearInterval(refreshTimer); refreshTimer = null; }
+
+function fmtDate(d) { return d.toISOString().slice(0, 10); }
+function addDays(d, n) { const copy = new Date(d); copy.setDate(copy.getDate() + n); return copy; }
+
+async function refreshBookings() {
+  const today = new Date();
+  const res = await callApi('availability', { from: fmtDate(today), to: fmtDate(addDays(today, RANGE_DAYS)) });
+  if (res.ok) {
+    bookings = res.bookings || [];
+    renderBookingList();
+  }
+}
+
+// ---------- Main app ----------
+function renderMain() {
+  app.innerHTML = `
+    <div class="topbar">
+      <div class="greet">Welcome, <span>${currentMember.name}</span></div>
+      <button class="btn btn-secondary" id="logoutBtn">Log out</button>
+    </div>
+    ${lanternBanner()}
+    <div class="content">
+      <div class="card">
+        <div class="section-title">Reserve the terrace</div>
+        <div class="section-sub">Pick a date and period. We'll flag it if it clashes with another booking.</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Date</label>
+            <input type="date" id="bDate" min="${fmtDate(new Date())}" />
+          </div>
+          <div class="form-group">
+            <label>Period</label>
+            <select id="bPeriod">
+              ${PERIODS.map(p => `<option value="${p}">${p}</option>`).join("")}
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Occasion</label>
+            <input type="text" id="bTitle" placeholder="e.g. Anjana's birthday dinner" />
+          </div>
+          <div class="form-group" style="max-width:120px;">
+            <label>Guests</label>
+            <input type="number" id="bGuests" min="1" max="200" value="10" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Notes (optional)</label>
+            <input type="text" id="bNotes" placeholder="Anything else the family should know" />
+          </div>
+        </div>
+        <div class="error-msg" id="bookError"></div>
+        <button class="btn" id="bookBtn" style="width:auto; padding:12px 22px;">Book it</button>
+      </div>
+
+      <div class="section-title">Upcoming bookings</div>
+      <div class="section-sub">Everyone in the family sees this list.</div>
+      <div id="bookingListWrap"></div>
+      <div class="foot-note">Shared with all 9 of you • updates automatically every 15s</div>
+    </div>
+  `;
+  document.getElementById("logoutBtn").addEventListener("click", logout);
+  document.getElementById("bookBtn").addEventListener("click", submitBooking);
+  renderBookingList();
+}
+
+function renderBookingList() {
+  const wrap = document.getElementById("bookingListWrap");
+  if (!wrap) return;
+  if (!bookingsLoaded) { wrap.innerHTML = `<div class="empty-state">Loading bookings…</div>`; return; }
+
+  const sorted = [...bookings].sort((a, b) => (a.date + a.period).localeCompare(b.date + b.period));
+  if (sorted.length === 0) {
+    wrap.innerHTML = `<div class="empty-state">The terrace is wide open — nothing booked yet. Be the first.</div>`;
+    return;
+  }
+  wrap.innerHTML = `<div class="booking-list">
+    ${sorted.map(b => {
+      const dateObj = new Date(b.date + "T00:00:00");
+      const day = dateObj.getDate();
+      const month = dateObj.toLocaleDateString(undefined, { month: 'short' });
+      return `
+        <div class="booking-card ${b.canCancel ? 'mine' : ''}">
+          <div class="booking-date"><div class="d">${day}</div><div class="m">${month}</div></div>
+          <div class="booking-info">
+            <div class="booking-time">${b.period} <span class="booking-name">${escapeHtml(b.memberName)}</span></div>
+            ${b.partyTitle ? `<div class="booking-purpose">${escapeHtml(b.partyTitle)}</div>` : ""}
+            <div class="booking-guests">${b.guestCount} guests</div>
+            ${b.canCancel ? `<button class="cancel-link" data-id="${b.bookingId}">Cancel booking</button>` : ""}
+          </div>
+        </div>
+      `;
+    }).join("")}
+  </div>`;
+  wrap.querySelectorAll(".cancel-link").forEach(el => {
+    el.addEventListener("click", () => cancelBooking(el.getAttribute("data-id")));
+  });
+}
+
+function escapeHtml(str) {
+  const div = document.createElement("div");
+  div.textContent = str || "";
+  return div.innerHTML;
+}
+
+function showBookError(msg) {
+  const el = document.getElementById("bookError");
+  if (el) el.textContent = msg || "";
+}
+
+async function submitBooking() {
+  showBookError("");
+  const date = document.getElementById("bDate").value;
+  const period = document.getElementById("bPeriod").value;
+  const partyTitle = document.getElementById("bTitle").value.trim();
+  const guestCount = parseInt(document.getElementById("bGuests").value, 10);
+  const notes = document.getElementById("bNotes").value.trim();
+
+  if (!date || !period || !partyTitle || !guestCount || guestCount < 1) {
+    showBookError("Please fill in date, period, occasion and guest count.");
+    return;
+  }
+
+  const btn = document.getElementById("bookBtn");
+  btn.disabled = true; btn.textContent = "Booking…";
+  const res = await callApi('createBooking', { date, period, partyTitle, guestCount, notes });
+  btn.disabled = false; btn.textContent = "Book it";
+
+  if (!res.ok) {
+    showBookError(errorText(res.error));
+    if (res.error === 'TIME_ALREADY_BOOKED') refreshBookings();
+    return;
+  }
+
+  document.getElementById("bTitle").value = "";
+  document.getElementById("bNotes").value = "";
+  document.getElementById("bGuests").value = "10";
+  await refreshBookings();
+}
+
+async function cancelBooking(bookingId) {
+  const res = await callApi('cancelBooking', { bookingId });
+  if (!res.ok) {
+    alert(errorText(res.error));
+  }
+  await refreshBookings();
+}
+
+render();
+</script>
+</body>
+</html>
