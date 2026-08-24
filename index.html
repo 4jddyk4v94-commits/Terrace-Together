@@ -87,7 +87,7 @@
 
 <script>
 // ---- Must match the Apps Script backend exactly ----
-const WEBAPP_URL = "const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxXj-kYFxErU-1KzpMI40d1optTh5SwY448WSRlb8_q4WqDjoK3ShWLhlRLpy6hquRzYQ/exec"; // ends in /exec
+const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxXj-kYFxErU-1KzpMI40d1optTh5SwY448WSRlb8_q4WqDjoK3ShWLhlRLpy6hquRzYQ/exec";
 const MEMBERS = [
   { id: 'member-1', name: 'Gibu' },
   { id: 'member-2', name: 'Mariam' },
@@ -215,8 +215,6 @@ async function attemptLogin() {
   const btn = document.getElementById("loginBtn");
   btn.disabled = true; btn.textContent = "Checking…";
 
-  // Verify by attempting a real availability call — this both confirms the
-  // code is right (backend checks memberId+code) and warms the first load.
   currentMember = member;
   sessionCode = codeVal;
   const today = new Date();
